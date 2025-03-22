@@ -2,9 +2,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 function Transpose() {
-  const [sphere, setSphere] = useState("");
-  const [cylinder, setCylinder] = useState("");
-  const [axis, setAxis] = useState("");
+  const [sphere, setSphere] = useState("1.00");
+  const [cylinder, setCylinder] = useState("-0.25");
+  const [axis, setAxis] = useState("180");
   const [result, setResult] = useState<{
     sphere: number;
     cylinder: number;
@@ -29,15 +29,16 @@ function Transpose() {
     if (newAxis === 0) newAxis = 180;
 
     setResult({
-      sphere: parseFloat(newSphere.toFixed(2)),
-      cylinder: parseFloat(newCylinder.toFixed(2)),
-      axis: newAxis,
+      sphere: parseFloat(newSphere.toFixed(3)),
+      cylinder: parseFloat(newCylinder.toFixed(3)),
+      axis: parseFloat(newAxis.toFixed(3)),
     });
   };
 
   const handleCopy = async () => {
     if (!result) return;
-    const text = `${result.sphere} + ${result.cylinder} x ${result.axis}`;
+    const formattedAxis = result.axis.toFixed(0).padStart(2, "0");
+    const text = `${result.sphere} + ${result.cylinder} x ${formattedAxis}`;
     try {
       await navigator.clipboard.writeText(text);
       // toast success
@@ -48,42 +49,65 @@ function Transpose() {
     }
   };
 
+  const inputs = [
+    {
+      label: "Sphere",
+      value: sphere,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setSphere(e.target.value),
+      step: "0.25",
+    },
+    {
+      label: "Cylinder",
+      value: cylinder,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setCylinder(e.target.value),
+      step: "0.25",
+    },
+    {
+      label: "Axis (0 - 180)",
+      value: axis,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setAxis(e.target.value),
+      step: "1",
+    },
+  ];
+
+  const outputs = [
+    {
+      label: "Sphere",
+      value: result?.sphere?.toFixed(2),
+    },
+    {
+      label: "Cylinder",
+      value: result?.cylinder?.toFixed(2),
+    },
+    {
+      label: "Axis",
+      value: result?.axis,
+    },
+  ];
+
   return (
     <div className="max-w-md mx-auto p-4 bg-base-100 shadow-lg rounded-box space-y-6 mb-6">
       <h2 className="text-xl font-bold mb-6">Transposition</h2>
 
       <div className="flex gap-2 items-center justify-center">
-        <div className="form-control flex flex-col items-center gap-2 justify-center">
-          <label className="label font-bold">Sphere</label>
-          <input
-            type="number"
-            step="0.25"
-            className="input input-bordered max-w-28"
-            value={sphere}
-            onChange={(e) => setSphere(e.target.value)}
-          />
-        </div>
-
-        <div className="form-control flex flex-col items-center gap-2 justify-center">
-          <label className="label font-bold ">Cylinder</label>
-          <input
-            type="number"
-            step="0.25"
-            className="input input-bordered max-w-28"
-            value={cylinder}
-            onChange={(e) => setCylinder(e.target.value)}
-          />
-        </div>
-
-        <div className="form-control flex flex-col items-center gap-2 justify-center">
-          <label className="label font-bold ">Axis (0 - 180)</label>
-          <input
-            type="number"
-            className="input input-bordered max-w-28"
-            value={axis}
-            onChange={(e) => setAxis(e.target.value)}
-          />
-        </div>
+        {inputs.map((input, index) => (
+          <div
+            key={index}
+            className="form-control flex flex-col items-center gap-2 justify-center"
+          >
+            <label className="label font-bold">{input.label}</label>
+            <input
+              type="number"
+              step={input.step}
+              className="input input-bordered max-w-28"
+              value={input.value}
+              onChange={input.onChange}
+            />
+          </div>
+        ))}
       </div>
 
       <button className="btn btn-primary w-full" onClick={handleTranspose}>
@@ -91,22 +115,21 @@ function Transpose() {
       </button>
 
       {result && (
-        <div className="p-4 bg-base-200 rounded-box">
+        <div className="p-4 bg-base-200 rounded-box space-y-6">
           <h3 className="font-semibold">Transposed Prescription:</h3>
           <div className="flex gap-2 justify-center">
-            <p className="flex flex-col bg-base-300 p-3 rounded-2xl ">
-              <span>Sphere</span>
-              <strong>{result.sphere}</strong>
-            </p>
-            <p className="flex flex-col bg-base-300 p-3 rounded-2xl">
-              <span>Cylinder</span>
-              <strong>{result.cylinder}</strong>
-            </p>
-            <p className="flex flex-col bg-base-300 p-3 rounded-2xl">
-              <span>Axis</span>
-              <strong>{result.axis}</strong>
-            </p>
+            {outputs.map((output, index) => (
+              <div
+                key={index}
+                className="flex flex-col bg-base-300 p-3 rounded-2xl "
+              >
+                <span>{output.label}</span>
+                <strong>{output.value}</strong>
+              </div>
+            ))}
           </div>
+
+          {/* Copy Button */}
           <button className="btn btn-outline btn-sm mt-2 " onClick={handleCopy}>
             <span>Copy Rx </span>
             <svg
