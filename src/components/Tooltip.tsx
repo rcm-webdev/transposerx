@@ -1,6 +1,12 @@
 function Tooltip() {
+  const steps = [
+    "Add the Sphere and Cylinder values to get the new Sphere.",
+    "Flip the sign of the Cylinder to make it positive.",
+    "Adjust the Axis by 90 degrees. If the result is over 180, subtract 180 to keep it within the standard range.",
+  ];
+
   return (
-    <div className="tooltip " data-tip="Learn">
+    <div className="tooltip w-full sm:w-auto " data-tip="Learn">
       {/* Open the modal using document.getElementById('ID').showModal() method */}
       <button
         className="btn btn-primary w-full btn-wide sm:btn-square "
@@ -31,11 +37,63 @@ function Tooltip() {
         </svg>
       </button>
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Hello!</h3>
-          <p className="py-4">
-            Press ESC key or click the button below to close
+        <div className="modal-box space-y-6">
+          <h3 className="font-bold text-lg">
+            🔍 What’s Happening Behind the Scenes?
+          </h3>
+          <p>
+            When you transpose a glasses prescription from negative cylinder to
+            positive cylinder, we apply a standard formula used in optometry:
           </p>
+          <ul className="py-4 text-left">
+            {steps.map((step, index) => (
+              <li key={index}>
+                <strong>{index + 1}. </strong>
+                {step}
+              </li>
+            ))}
+          </ul>
+
+          <div className="p-4 bg-base-200 rounded-box space-y-6">
+            <h3 className="font-bold text-lg">Example</h3>
+            <div className="space-y-6">
+              <div className="flex flex-col rounded-2xl">
+                <h3 className="font-bold mb-6">Original Rx</h3>
+                <div className="flex gap-2 justify-center">
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Sphere</span>
+                    <strong>-2.00</strong>
+                  </div>
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Cylinder</span>
+                    <strong>-1.00</strong>
+                  </div>
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Axis</span>
+                    <strong>180</strong>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col rounded-2xl">
+                <h3 className="font-bold mb-6">Transposed Rx</h3>
+                <div className="flex gap-2 justify-center">
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Sphere</span>
+                    <strong>-3.00</strong>
+                  </div>
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Cylinder</span>
+                    <strong>+1.00</strong>
+                  </div>
+                  <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
+                    <span>Axis</span>
+                    <strong>90</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="modal-action">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
