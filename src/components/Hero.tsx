@@ -13,9 +13,9 @@ function Hero() {
           </div>
           {/* Description */}
           <p className="py-6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima sunt
-            illum, dolore nam consequatur pariatur! Lorem ipsum dolor sit amet,
-            consectetur adipisicing elit.
+            Easily convert glasses prescriptions from negative to positive
+            cylinder format. Enter your original sphere, cylinder, and axis
+            values to get the transposed equivalent instantly.
           </p>
           {/* Transposer */}
           <div>
