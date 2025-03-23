@@ -87,7 +87,7 @@ function Tooltip() {
                   </div>
                   <div className="bg-base-300 rounded-2xl p-3 flex flex-col">
                     <span>Axis</span>
-                    <strong>90</strong>
+                    <strong>090</strong>
                   </div>
                 </div>
               </div>
