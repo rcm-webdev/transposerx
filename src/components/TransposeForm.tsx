@@ -76,15 +76,24 @@ function Transpose() {
   const outputs = [
     {
       label: "Sphere",
-      value: result?.sphere?.toFixed(2),
+      value:
+        result?.sphere !== undefined
+          ? `${result.sphere >= 0 ? "+" : ""}${result.sphere.toFixed(2)}`
+          : "",
     },
     {
       label: "Cylinder",
-      value: result?.cylinder?.toFixed(2),
+      value:
+        result?.cylinder !== undefined
+          ? `${result.cylinder >= 0 ? "+" : ""}${result.cylinder.toFixed(2)}`
+          : "",
     },
     {
       label: "Axis",
-      value: result?.axis,
+      value:
+        result?.axis !== undefined
+          ? result.axis.toFixed(0).padStart(3, "0")
+          : "",
     },
   ];
 
