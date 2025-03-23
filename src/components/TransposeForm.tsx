@@ -37,14 +37,25 @@ function Transpose() {
 
   const handleCopy = async () => {
     if (!result) return;
-    const formattedAxis = result.axis.toFixed(0).padStart(2, "0");
-    const text = `${result.sphere} + ${result.cylinder} x ${formattedAxis}`;
+
+    // Format sphere and cylinder with explicit "+" for positive values
+    const formattedSphere = `${
+      result.sphere >= 0 ? "+" : ""
+    }${result.sphere.toFixed(2)}`;
+    const formattedCylinder = `${
+      result.cylinder >= 0 ? "+" : ""
+    }${result.cylinder.toFixed(2)}`;
+    const formattedAxis = result.axis.toFixed(0).padStart(3, "0");
+
+    // Combine into the desired format
+    const text = `${formattedSphere} ${formattedCylinder} x ${formattedAxis}`;
+
     try {
       await navigator.clipboard.writeText(text);
-      // toast success
+      // Show success toast
       toast.success("Copied to clipboard!");
     } catch {
-      // toast error
+      // Show error toast
       toast.error("Failed to copy.");
     }
   };
