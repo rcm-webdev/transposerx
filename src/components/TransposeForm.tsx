@@ -18,10 +18,9 @@ interface EyeFormProps {
   values: EyeValues;
   onValuesChange: (values: EyeValues) => void;
   transposedValues: TransposedValues | null;
-  onTranspose: () => void;
 }
 
-function EyeForm({ label, values, onValuesChange, transposedValues, onTranspose }: EyeFormProps) {
+function EyeForm({ label, values, onValuesChange, transposedValues }: EyeFormProps) {
   const inputs = [
     {
       label: "Sphere",
@@ -62,19 +61,19 @@ function EyeForm({ label, values, onValuesChange, transposedValues, onTranspose 
   ] : [];
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{label}</h3>
-      <div className="flex gap-2 items-center justify-center">
+    <div className="space-y-4 p-4 bg-base-200 rounded-lg">
+      <h3 className="text-lg font-semibold text-center">{label}</h3>
+      <div className="space-y-4">
         {inputs.map((input, index) => (
           <div
             key={index}
-            className="form-control flex flex-col items-center gap-2 justify-center"
+            className="form-control flex flex-row items-center gap-4 justify-between"
           >
-            <label className="label font-bold">{input.label}</label>
+            <label className="label font-medium w-24">{input.label}</label>
             <input
               type="number"
               step={input.step}
-              className="input input-bordered max-w-28"
+              className="input input-bordered w-32"
               value={input.value}
               onChange={input.onChange}
             />
@@ -82,18 +81,14 @@ function EyeForm({ label, values, onValuesChange, transposedValues, onTranspose 
         ))}
       </div>
 
-      <button className="btn btn-primary w-full" onClick={onTranspose}>
-        Transpose {label}
-      </button>
-
       {transposedValues && (
-        <div className="p-4 bg-base-200 rounded-box space-y-4">
-          <h4 className="font-semibold">Transposed {label}:</h4>
-          <div className="flex gap-2 justify-center">
+        <div className="mt-4 p-4 bg-base-300 rounded-lg space-y-2">
+          <h4 className="font-semibold text-center">Transposed {label}:</h4>
+          <div className="space-y-2">
             {outputs.map((output, index) => (
               <div
                 key={index}
-                className="flex flex-col bg-base-300 p-3 rounded-2xl"
+                className="flex justify-between items-center px-2"
               >
                 <span>{output.label}</span>
                 <strong>{output.value}</strong>
@@ -149,6 +144,11 @@ function Transpose() {
     }));
   };
 
+  const handleTransposeBoth = () => {
+    handleTranspose(odValues, true);
+    handleTranspose(osValues, false);
+  };
+
   const handleCopy = async () => {
     if (!results.od && !results.os) return;
 
@@ -173,45 +173,55 @@ function Transpose() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-base-100 shadow-lg rounded-box space-y-6 mb-6">
-      <h2 className="text-xl font-bold mb-6">Prescription Transposition</h2>
+    <div className="max-w-xl mx-auto p-6 bg-base-100 shadow-lg rounded-box space-y-6">
+      <h2 className="text-2xl font-bold text-center mb-6">Prescription Transposition</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6">
         <EyeForm
           label="OD (Right Eye)"
           values={odValues}
           onValuesChange={setOdValues}
           transposedValues={results.od}
-          onTranspose={() => handleTranspose(odValues, true)}
         />
         <EyeForm
           label="OS (Left Eye)"
           values={osValues}
           onValuesChange={setOsValues}
           transposedValues={results.os}
-          onTranspose={() => handleTranspose(osValues, false)}
         />
       </div>
 
-      {(results.od || results.os) && (
-        <button className="btn btn-outline w-full mt-4" onClick={handleCopy}>
-          <span>Copy Complete Rx</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
-            />
-          </svg>
+      <div className="space-y-4 pt-4">
+        <button 
+          className="btn btn-primary w-full"
+          onClick={handleTransposeBoth}
+        >
+          Transpose Prescription
         </button>
-      )}
+
+        {(results.od || results.os) && (
+          <button 
+            className="btn btn-outline w-full" 
+            onClick={handleCopy}
+          >
+            <span>Copy Complete Rx</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-4 ml-2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   );
 }
