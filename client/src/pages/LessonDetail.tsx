@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import { Navbar } from '@/components/Navbar'
 import { QuizComponent } from '@/components/QuizComponent'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 import Lesson1, { frontmatter as fm1 } from '../../content/lessons/01-what-is-cylinder.mdx'
 import Lesson2, { frontmatter as fm2 } from '../../content/lessons/02-what-is-axis.mdx'
@@ -60,12 +60,10 @@ export default function LessonDetail() {
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/lessons">
-              <ChevronLeft className="h-4 w-4" />
-              Lessons
-            </Link>
-          </Button>
+          <Link to="/lessons" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+            <ChevronLeft className="h-4 w-4" />
+            Lessons
+          </Link>
           {lesson && (
             <Badge variant={lesson.status === 'completed' ? 'default' : 'secondary'}>
               {lesson.status === 'completed' ? 'Completed' : lesson.status === 'started' ? 'In Progress' : 'Not Started'}

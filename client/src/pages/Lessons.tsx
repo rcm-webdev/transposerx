@@ -5,7 +5,7 @@ import { api } from '@/lib/api'
 import { Navbar } from '@/components/Navbar'
 import { LessonCard } from '@/components/LessonCard'
 import { Progress } from '@/components/ui/progress'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 export default function Lessons() {
   const { data: lessons, isLoading } = useQuery({
@@ -22,12 +22,10 @@ export default function Lessons() {
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Lessons</h1>
-          <Button asChild variant="outline" size="sm">
-            <Link to="/practice">
-              <Brain className="h-4 w-4 mr-1" />
-              Practice Mode
-            </Link>
-          </Button>
+          <Link to="/practice" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
+            <Brain className="h-4 w-4 mr-1" />
+            Practice Mode
+          </Link>
         </div>
 
         <div className="space-y-1">

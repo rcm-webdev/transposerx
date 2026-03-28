@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const EyeSchema = z.object({
-  sphere: z.coerce.number(),
-  cylinder: z.coerce.number(),
-  axis: z.coerce.number().int().min(1).max(180),
+  sphere: z.number(),
+  cylinder: z.number(),
+  axis: z.number().int().min(1).max(180),
 })
 
 const FormSchema = z.object({
@@ -54,7 +54,7 @@ function EyeFields({
             <Input
               type="number"
               step={field === 'axis' ? '1' : '0.25'}
-              {...register(`${prefix}.${field}`)}
+              {...register(`${prefix}.${field}`, { valueAsNumber: true })}
               className="h-9"
             />
             {errors[prefix]?.[field] && (
