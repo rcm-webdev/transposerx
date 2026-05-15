@@ -25,3 +25,7 @@ todo.todo
 *.njsproj
 *.sln
 *.sw?
+
+.agents/
+.claude/
+docs/
