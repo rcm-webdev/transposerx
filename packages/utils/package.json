@@ -1,0 +1,20 @@
+{
+  "name": "@transposerx/utils",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@transposerx/types": "file:../types"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "vitest": "^2.0.0"
+  }
+}
