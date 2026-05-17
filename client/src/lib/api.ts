@@ -3,8 +3,8 @@ const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
   })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
   return res.json()
@@ -34,6 +34,7 @@ export interface DashboardData {
   lessonProgress: LessonWithProgress[]
   recentHistory: TranspositionRecord[]
   bestQuiz: { score: number; total: number } | null
+  transpositionCount: number
 }
 
 export const api = {
@@ -44,6 +45,10 @@ export const api = {
         '/api/transpositions',
         { method: 'POST', body: JSON.stringify(body) }
       ),
+    createBoth: (body: {
+      od: { inputSphere: number; inputCylinder: number; inputAxis: number }
+      os: { inputSphere: number; inputCylinder: number; inputAxis: number }
+    }) => request<{ ok: boolean }>('/api/transpositions/both', { method: 'POST', body: JSON.stringify(body) }),
   },
   lessons: {
     list: () => request<LessonWithProgress[]>('/api/lessons'),

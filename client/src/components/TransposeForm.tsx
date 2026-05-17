@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -41,7 +41,7 @@ function EyeFields({
   eye: string
   prefix: 'od' | 'os'
   register: ReturnType<typeof useForm<FormValues>>['register']
-  errors: any
+  errors: FieldErrors<FormValues>
   result: EyeResult | null
 }) {
   return (
@@ -90,22 +90,11 @@ export function TransposeForm() {
   })
 
   const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      await Promise.all([
-        api.transpositions.create({
-          eye: 'OD',
-          inputSphere: values.od.sphere,
-          inputCylinder: values.od.cylinder,
-          inputAxis: values.od.axis,
-        }),
-        api.transpositions.create({
-          eye: 'OS',
-          inputSphere: values.os.sphere,
-          inputCylinder: values.os.cylinder,
-          inputAxis: values.os.axis,
-        }),
-      ])
-    },
+    mutationFn: (values: FormValues) =>
+      api.transpositions.createBoth({
+        od: { inputSphere: values.od.sphere, inputCylinder: values.od.cylinder, inputAxis: values.od.axis },
+        os: { inputSphere: values.os.sphere, inputCylinder: values.os.cylinder, inputAxis: values.os.axis },
+      }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
   })
 
@@ -122,10 +111,14 @@ export function TransposeForm() {
       results.od ? `OD: ${formatRx(results.od)}` : '',
       results.os ? `OS: ${formatRx(results.os)}` : '',
     ].filter(Boolean)
-    await navigator.clipboard.writeText(lines.join('\n'))
-    setCopied(true)
-    toast.success('Copied to clipboard')
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'))
+      setCopied(true)
+      toast.success('Copied to clipboard')
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.error('Failed to copy to clipboard')
+    }
   }
 
   return (
@@ -140,7 +133,7 @@ export function TransposeForm() {
           <div className="flex gap-2">
             <Button type="submit" className="flex-1">Transpose</Button>
             {(results.od || results.os) && (
-              <Button type="button" variant="outline" onClick={handleCopy}>
+              <Button type="button" variant="outline" onClick={handleCopy} aria-label={copied ? 'Copied' : 'Copy to clipboard'}>
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             )}

@@ -10,8 +10,10 @@ const statusConfig = {
   not_started: { icon: Circle, label: 'Not Started', variant: 'outline' as const, color: 'text-muted-foreground' },
 }
 
+const defaultStatus = statusConfig.not_started
+
 export function LessonCard({ lesson }: { lesson: LessonWithProgress }) {
-  const { icon: Icon, label, variant, color } = statusConfig[lesson.status]
+  const { icon: Icon, label, variant, color } = statusConfig[lesson.status] ?? defaultStatus
 
   return (
     <Link to={`/lessons/${lesson.slug}`}>

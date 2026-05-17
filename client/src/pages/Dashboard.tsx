@@ -1,24 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
-import { BookOpen, FlipHorizontal, Trophy, Table2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { api } from '@/lib/api'
-import { Navbar } from '@/components/Navbar'
-import { TransposeForm } from '@/components/TransposeForm'
-import { HistoryList } from '@/components/HistoryList'
-import { Progress } from '@/components/ui/progress'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useQuery } from "@tanstack/react-query";
+import { BookOpen, FlipHorizontal, Trophy, Table2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { api } from "@/lib/api";
+import { Navbar } from "@/components/Navbar";
+import { TransposeForm } from "@/components/TransposeForm";
+import { HistoryList } from "@/components/HistoryList";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const statusLabel: Record<string, string> = {
-  completed: 'Done',
-  started: 'Started',
-  not_started: '—',
-}
+  completed: "Done",
+  started: "Started",
+  not_started: "—",
+};
 
 export default function Dashboard() {
   const { data, isLoading } = useQuery({
-    queryKey: ['dashboard'],
+    queryKey: ["dashboard"],
     queryFn: api.dashboard.get,
-  })
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,8 +35,10 @@ export default function Dashboard() {
                 LESSONS DONE
               </div>
               <p className="text-2xl font-bold">
-                {data?.lessonsCompleted ?? '—'}{' '}
-                <span className="text-sm font-normal text-muted-foreground">/ 4</span>
+                {data?.lessonsCompleted ?? "—"}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  / 4
+                </span>
               </p>
             </CardContent>
           </Card>
@@ -47,7 +49,7 @@ export default function Dashboard() {
                 TRANSPOSITIONS
               </div>
               <p className="text-2xl font-bold">
-                {data?.recentHistory !== undefined ? data.recentHistory.length : '—'}
+                {data?.transpositionCount ?? "—"}
               </p>
             </CardContent>
           </Card>
@@ -58,9 +60,7 @@ export default function Dashboard() {
                 BEST QUIZ
               </div>
               <p className="text-2xl font-bold">
-                {data?.bestQuiz
-                  ? `${data.bestQuiz.score} / ${data.bestQuiz.total}`
-                  : '—'}
+                {data?.transpositionCount ?? "—"}
               </p>
             </CardContent>
           </Card>
@@ -81,12 +81,14 @@ export default function Dashboard() {
                 {data?.lessonsCompleted ?? 0} of 4 lessons completed
               </p>
               <div className="space-y-1">
-                {data?.lessonProgress.map(l => (
+                {data?.lessonProgress.map((l) => (
                   <div key={l.slug} className="flex justify-between text-sm">
                     <Link to={`/lessons/${l.slug}`} className="hover:underline">
                       {l.title}
                     </Link>
-                    <span className={`text-xs ${l.status === 'completed' ? 'text-green-600 font-medium' : 'text-muted-foreground'}`}>
+                    <span
+                      className={`text-xs ${l.status === "completed" ? "text-green-600 font-medium" : "text-muted-foreground"}`}
+                    >
                       {statusLabel[l.status]}
                     </span>
                   </div>
@@ -105,7 +107,12 @@ export default function Dashboard() {
             <CardContent>
               {isLoading ? (
                 <div className="space-y-1">
-                  {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-muted animate-pulse rounded" />)}
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-4 bg-muted animate-pulse rounded"
+                    />
+                  ))}
                 </div>
               ) : (
                 <HistoryList records={data?.recentHistory ?? []} />
@@ -125,5 +132,5 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
-  )
+  );
 }

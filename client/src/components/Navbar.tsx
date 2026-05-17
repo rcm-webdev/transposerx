@@ -7,8 +7,11 @@ export function Navbar() {
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
-    await signOut()
-    navigate('/login')
+    try {
+      await signOut()
+    } finally {
+      navigate('/login')
+    }
   }
 
   const navLink = buttonVariants({ variant: 'ghost', size: 'sm' })
