@@ -75,7 +75,7 @@ export default function LessonDetail() {
           <Component />
         </div>
 
-        {frontmatter.quiz[0] && (
+        {frontmatter?.quiz?.[0] && (
           <QuizComponent
             question={frontmatter.quiz[0]}
             onCorrect={() => {

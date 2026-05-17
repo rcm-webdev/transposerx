@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { BookOpen, FlipHorizontal, CheckCircle2, XCircle } from 'lucide-react'
 import { api } from '@/lib/api'
-import { transpose, formatRx } from '@/lib/transpose'
+import { transpose, formatRx } from '@transposerx/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -59,7 +59,7 @@ function generateDrill(): Question {
 
 function buildSession(): Question[] {
   const allConceptQs: Question[] = [fm1, fm2, fm3, fm4]
-    .flatMap(fm => fm.quiz.map(q => ({ type: 'concept' as const, ...q })))
+    .flatMap(fm => (fm?.quiz ?? []).map(q => ({ type: 'concept' as const, ...q })))
 
   const shuffledConcept = [...allConceptQs].sort(() => Math.random() - 0.5).slice(0, 6)
   const drills = Array.from({ length: 4 }, generateDrill)

@@ -1,3 +1,6 @@
+import type { TranspositionRecord, LessonWithProgress, DashboardData } from '@transposerx/types'
+export type { TranspositionRecord, LessonWithProgress, DashboardData }
+
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -8,33 +11,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
   return res.json()
-}
-
-export interface TranspositionRecord {
-  id: string
-  eye: string
-  inputSphere: number
-  inputCylinder: number
-  inputAxis: number
-  outSphere: number
-  outCylinder: number
-  outAxis: number
-  createdAt: string
-}
-
-export interface LessonWithProgress {
-  slug: string
-  title: string
-  order: number
-  status: 'not_started' | 'started' | 'completed'
-}
-
-export interface DashboardData {
-  lessonsCompleted: number
-  lessonProgress: LessonWithProgress[]
-  recentHistory: TranspositionRecord[]
-  bestQuiz: { score: number; total: number } | null
-  transpositionCount: number
 }
 
 export const api = {
