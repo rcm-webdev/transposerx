@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.env*
 todo.todo
 
 .superpowers/
@@ -29,3 +30,4 @@ todo.todo
 .agents/
 .claude/
 docs/
+CLAUDE.md
