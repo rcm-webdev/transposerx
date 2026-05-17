@@ -2,10 +2,10 @@
   "name": "transposerx",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "build": "npm run build --prefix server && npm run build --prefix client",
-    "migrate": "npm run migrate --prefix server",
-    "test": "npm run test --prefix server"
+    "dev": "concurrently \"npm run dev --prefix apps/server\" \"npm run dev --prefix apps/client\"",
+    "build": "npm run build --prefix apps/server && npm run build --prefix apps/client",
+    "migrate": "npm run migrate --prefix apps/server",
+    "test": "npm run test --prefix apps/server"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
