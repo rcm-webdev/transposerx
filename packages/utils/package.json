@@ -11,7 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@transposerx/types": "file:../types"
+    "@transposerx/types": "*"
   },
   "devDependencies": {
     "typescript": "~5.7.0",
