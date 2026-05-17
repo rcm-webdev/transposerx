@@ -33,6 +33,12 @@ describe('transpose', () => {
       axis: 45,
     })
   })
+
+  it('cylinder 0 does not produce negative zero', () => {
+    const result = transpose({ sphere: 1, cylinder: 0, axis: 90 })
+    expect(Object.is(result.cylinder, -0)).toBe(false)
+    expect(result.cylinder).toBe(0)
+  })
 })
 
 describe('formatRx', () => {

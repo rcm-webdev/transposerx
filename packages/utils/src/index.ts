@@ -4,7 +4,7 @@ export function transpose({ sphere, cylinder, axis }: TransposeInput): Transpose
   const newAxis = (axis + 90) % 180
   return {
     sphere: Math.round((sphere + cylinder) * 100) / 100,
-    cylinder: Math.round(cylinder * -1 * 100) / 100,
+    cylinder: Math.round(cylinder * -1 * 100) / 100 || 0,
     axis: newAxis === 0 ? 180 : newAxis,
   }
 }
