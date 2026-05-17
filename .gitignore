@@ -16,6 +16,7 @@ packages/*/dist
 todo.todo
 
 .superpowers/
+.turbo/
 
 # Editor directories and files
 .vscode/*
