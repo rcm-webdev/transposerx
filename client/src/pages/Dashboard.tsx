@@ -60,7 +60,9 @@ export default function Dashboard() {
                 BEST QUIZ
               </div>
               <p className="text-2xl font-bold">
-                {data?.transpositionCount ?? "—"}
+                {data?.bestQuiz
+                  ? `${data.bestQuiz.score} / ${data.bestQuiz.total}`
+                  : "—"}
               </p>
             </CardContent>
           </Card>
