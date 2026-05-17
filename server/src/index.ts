@@ -19,7 +19,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }))
 
-app.all('/api/auth/*splat', toNodeHandler(auth))
+app.all('/api/auth/*', toNodeHandler(auth))
 
 app.use(express.json())
 

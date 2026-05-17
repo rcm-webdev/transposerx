@@ -18,7 +18,7 @@ router.get('/', async (_req, res, next) => {
     const history = await prisma.transpositionHistory.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: 10,
+      take: 2,
     })
     res.json(history)
   } catch (err) {
@@ -35,17 +35,20 @@ router.post('/', async (req, res, next) => {
   const { eye, inputSphere, inputCylinder, inputAxis } = parsed.data
   const result = transpose({ sphere: inputSphere, cylinder: inputCylinder, axis: inputAxis })
   try {
-    const record = await prisma.transpositionHistory.create({
-      data: {
-        userId: res.locals.session.user.id,
-        inputSphere,
-        inputCylinder,
-        inputAxis,
-        outSphere: result.sphere,
-        outCylinder: result.cylinder,
-        outAxis: result.axis,
-        eye,
-      },
+    const userId = res.locals.session.user.id
+    const values = {
+      inputSphere,
+      inputCylinder,
+      inputAxis,
+      outSphere: result.sphere,
+      outCylinder: result.cylinder,
+      outAxis: result.axis,
+      createdAt: new Date(),
+    }
+    const record = await prisma.transpositionHistory.upsert({
+      where: { userId_eye: { userId, eye } },
+      update: values,
+      create: { userId, eye, ...values },
     })
     res.status(201).json({
       id: record.id,

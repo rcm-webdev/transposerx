@@ -12,7 +12,7 @@ router.get('/', async (_req, res, next) => {
       prisma.transpositionHistory.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
-        take: 5,
+        take: 2,
         select: {
           id: true,
           inputSphere: true, inputCylinder: true, inputAxis: true,
@@ -37,6 +37,7 @@ router.get('/', async (_req, res, next) => {
             const best = allAttempts.reduce((b, c) => c.score / c.total > b.score / b.total ? c : b)
             return { score: best.score, total: best.total }
           })()
+    recentHistory.sort((a, b) => a.eye.localeCompare(b.eye))
     res.json({ lessonsCompleted, lessonProgress, recentHistory, bestQuiz })
   } catch (err) {
     next(err)
