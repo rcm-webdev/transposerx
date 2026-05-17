@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { prisma } from '../lib/prisma'
-import { LESSONS } from '../lib/lessons'
+import { prisma } from '../lib/prisma.js'
+import { LESSONS } from '../lib/lessons.js'
 
 const router = Router()
 

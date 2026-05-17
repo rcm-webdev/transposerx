@@ -2,12 +2,12 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { toNodeHandler } from 'better-auth/node'
-import { auth } from './lib/auth'
-import { requireAuth } from './middleware/requireAuth'
-import { transpositionsRouter } from './routes/transpositions'
-import { lessonsRouter } from './routes/lessons'
-import { practiceRouter } from './routes/practice'
-import { dashboardRouter } from './routes/dashboard'
+import { auth } from './lib/auth.js'
+import { requireAuth } from './middleware/requireAuth.js'
+import { transpositionsRouter } from './routes/transpositions.js'
+import { lessonsRouter } from './routes/lessons.js'
+import { practiceRouter } from './routes/practice.js'
+import { dashboardRouter } from './routes/dashboard.js'
 
 export const app = express()
 const PORT = Number(process.env.PORT) || 3000

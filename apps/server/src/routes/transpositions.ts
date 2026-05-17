@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
-import { prisma } from '../lib/prisma'
-import { transpose } from '../lib/transpose'
+import { prisma } from '../lib/prisma.js'
+import { transpose } from '@transposerx/utils'
 
 const router = Router()
 

@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { prisma } from './prisma'
+import { prisma } from './prisma.js'
 
 const secret = process.env.BETTER_AUTH_SECRET
 if (!secret) throw new Error('BETTER_AUTH_SECRET env var is required')

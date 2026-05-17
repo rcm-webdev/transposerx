@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { prisma } from '../lib/prisma'
-import { LESSONS } from '../lib/lessons'
+import type { LessonProgress, QuizAttempt } from '@prisma/client'
+import { prisma } from '../lib/prisma.js'
+import { LESSONS } from '../lib/lessons.js'
 
 const router = Router()
 
@@ -23,9 +24,9 @@ router.get('/', async (_req, res, next) => {
       }),
       prisma.quizAttempt.findMany({ where: { userId } }),
       prisma.transpositionHistory.count({ where: { userId } }),
-    ])
-    const progressMap = new Map(progressRecords.map(p => [p.lessonSlug, p.status]))
-    const lessonsCompleted = progressRecords.filter(p => p.status === 'completed').length
+    ]) as [LessonProgress[], { id: string; inputSphere: number; inputCylinder: number; inputAxis: number; outSphere: number; outCylinder: number; outAxis: number; eye: string; createdAt: Date }[], QuizAttempt[], number]
+    const progressMap = new Map(progressRecords.map((p: LessonProgress) => [p.lessonSlug, p.status]))
+    const lessonsCompleted = progressRecords.filter((p: LessonProgress) => p.status === 'completed').length
     const lessonProgress = LESSONS.map(l => ({
       slug: l.slug,
       title: l.title,
@@ -35,7 +36,7 @@ router.get('/', async (_req, res, next) => {
       allAttempts.length === 0
         ? null
         : (() => {
-            const best = allAttempts.reduce((b, c) => c.score / c.total > b.score / b.total ? c : b)
+            const best = allAttempts.reduce((b: QuizAttempt, c: QuizAttempt) => c.score / c.total > b.score / b.total ? c : b)
             return { score: best.score, total: best.total }
           })()
     recentHistory.sort((a, b) => a.eye.localeCompare(b.eye))
