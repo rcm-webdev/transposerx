@@ -3,7 +3,7 @@ DELETE FROM "TranspositionHistory"
 WHERE id NOT IN (
   SELECT DISTINCT ON ("userId", eye) id
   FROM "TranspositionHistory"
-  ORDER BY "userId", eye, "createdAt" DESC
+  ORDER BY "userId", eye, "createdAt" DESC, id DESC
 );
 
 -- Drop old index

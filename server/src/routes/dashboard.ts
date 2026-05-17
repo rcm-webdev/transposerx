@@ -7,7 +7,7 @@ const router = Router()
 router.get('/', async (_req, res, next) => {
   try {
     const userId = res.locals.session.user.id
-    const [progressRecords, recentHistory, allAttempts] = await prisma.$transaction([
+    const [progressRecords, recentHistory, allAttempts, transpositionCount] = await prisma.$transaction([
       prisma.lessonProgress.findMany({ where: { userId } }),
       prisma.transpositionHistory.findMany({
         where: { userId },
@@ -21,7 +21,8 @@ router.get('/', async (_req, res, next) => {
           createdAt: true,
         },
       }),
-      prisma.quizAttempt.findMany({ where: { userId }, take: 100 }),
+      prisma.quizAttempt.findMany({ where: { userId } }),
+      prisma.transpositionHistory.count({ where: { userId } }),
     ])
     const progressMap = new Map(progressRecords.map(p => [p.lessonSlug, p.status]))
     const lessonsCompleted = progressRecords.filter(p => p.status === 'completed').length
@@ -38,7 +39,7 @@ router.get('/', async (_req, res, next) => {
             return { score: best.score, total: best.total }
           })()
     recentHistory.sort((a, b) => a.eye.localeCompare(b.eye))
-    res.json({ lessonsCompleted, lessonProgress, recentHistory, bestQuiz })
+    res.json({ lessonsCompleted, lessonProgress, recentHistory, bestQuiz, transpositionCount })
   } catch (err) {
     next(err)
   }

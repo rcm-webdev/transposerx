@@ -8,6 +8,9 @@ const AttemptSchema = z.object({
   source: z.string().min(1),
   score: z.number().int().min(0),
   total: z.number().int().min(1),
+}).refine(data => data.score <= data.total, {
+  message: 'score must be less than or equal to total',
+  path: ['score'],
 })
 
 router.post('/attempt', async (req, res, next) => {
@@ -29,7 +32,7 @@ router.post('/attempt', async (req, res, next) => {
 router.get('/best', async (_req, res, next) => {
   try {
     const userId = res.locals.session.user.id
-    const attempts = await prisma.quizAttempt.findMany({ where: { userId }, take: 100 })
+    const attempts = await prisma.quizAttempt.findMany({ where: { userId } })
     if (attempts.length === 0) {
       res.json(null)
       return
