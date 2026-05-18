@@ -2,7 +2,7 @@
 
 Internal training tool built for ophthalmic technicians at a local eye clinic, combining an instant prescription transposer with a structured lesson library and practice mode.
 
-![Transpose Rx](/public/transposerx.gif)
+![Transpose Rx](apps/client/public/transposerx.jpg)
 
 ---
 
@@ -19,20 +19,26 @@ Internal training tool built for ophthalmic technicians at a local eye clinic, c
 
 ## Architecture
 
+
 ```mermaid
 graph TD
-    subgraph Client["Client (React 19 + Vite)"]
+    subgraph Client["apps/client (React 19 + Vite)"]
         Pages["Pages: Dashboard / Transpose / Lessons / Practice"]
         MDX["MDX Lesson Content (bundled at build time)"]
         AuthClient["Better Auth Client (session cookies)"]
         APILayer["Typed fetch wrapper + TanStack Query"]
     end
 
-    subgraph Server["Server (Express + TypeScript)"]
+    subgraph Server["apps/server (Express + TypeScript)"]
         AuthRoute["/api/auth/*"]
         ProtectedRoutes["/api/transpositions, /api/lessons, /api/practice, /api/dashboard"]
         Middleware["requireAuth middleware"]
         PrismaORM["Prisma ORM"]
+    end
+
+    subgraph Packages["packages/"]
+        Types["@transposerx/types"]
+        Utils["@transposerx/utils"]
     end
 
     subgraph DB["PostgreSQL"]
@@ -45,6 +51,10 @@ graph TD
     APILayer --> ProtectedRoutes
     ProtectedRoutes --> Middleware --> PrismaORM --> Tables
     AuthRoute --> PrismaORM
+    Client --> Types
+    Client --> Utils
+    Server --> Types
+    Server --> Utils
 ```
 
 ---
@@ -67,7 +77,10 @@ graph TD
 Better Auth manages sessions in the database, eliminating manual token refresh logic and making session revocation trivial.
 
 **MDX content bundled with the client**
-Lesson files live in `client/content/` and are compiled by Vite at build time, keeping the server stateless for content. Adding a new lesson is a file addition rather than a database migration.
+Lesson files live in `apps/client/content/` and are compiled by Vite at build time, keeping the server stateless for content. Adding a new lesson is a file addition rather than a database migration.
 
 **Unique constraint + upsert for transposition history**
 Rather than cleaning up old records in application code, a `@@unique([userId, eye])` constraint enforces one record per eye per user at the database level, keeping the history table lean and the logic simple.
+
+**Shared packages for transpose logic and types**
+Core transposition logic lives in `@transposerx/utils` (with unit tests) and is consumed by both client and server, ensuring consistent behavior across the stack without duplication.
