@@ -30,6 +30,7 @@ router.get('/', async (_req, res, next) => {
     const lessonProgress = LESSONS.map(l => ({
       slug: l.slug,
       title: l.title,
+      order: l.order,
       status: progressMap.get(l.slug) ?? 'not_started',
     }))
     const bestQuiz =
