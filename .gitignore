@@ -30,5 +30,8 @@ todo.todo
 *.sln
 *.sw?
 
+test-results/
+playwright-report/
+
 .agents/
 .claude/

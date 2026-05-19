@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { PrismaClient } from '@prisma/client'
 
 export default async function globalSetup() {
-  config({ path: resolve(process.cwd(), 'apps/server/.env.test') })
+  config({ path: resolve(process.cwd(), 'apps/server/.env.test'), override: true })
 
   if (!process.env.DATABASE_URL?.includes('transposerx_test')) {
     throw new Error('E2E setup: DATABASE_URL does not point to the test DB — aborting to prevent data loss.')
