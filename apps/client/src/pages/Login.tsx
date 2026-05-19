@@ -36,8 +36,8 @@ export default function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <div className="flex justify-center mb-4">
-            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500">
-              <span className="text-2xl font-extrabold text-white tracking-tight">Rx</span>
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-primary">
+              <span className="text-2xl font-extrabold text-primary-foreground tracking-tight">Rx</span>
             </div>
           </div>
           <CardTitle>Sign in</CardTitle>
