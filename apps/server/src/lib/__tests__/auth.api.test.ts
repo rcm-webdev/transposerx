@@ -29,10 +29,11 @@ describe('POST /api/auth/sign-up/email', () => {
   })
 
   it('returns an error for a duplicate email', async () => {
-    await request
+    const seed = await request
       .post('/api/auth/sign-up/email')
       .set('Origin', ORIGIN)
       .send({ name: 'First User', email: 'dupe@example.com', password: 'password123' })
+    expect(seed.status).toBe(200)
 
     const res = await request
       .post('/api/auth/sign-up/email')
