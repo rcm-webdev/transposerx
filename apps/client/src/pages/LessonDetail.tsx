@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar'
 import { QuizComponent } from '@/components/QuizComponent'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 import Lesson1, { frontmatter as fm1 } from '../../content/lessons/01-what-is-cylinder.mdx'
 import Lesson2, { frontmatter as fm2 } from '../../content/lessons/02-what-is-axis.mdx'
@@ -25,7 +26,7 @@ export default function LessonDetail() {
   const queryClient = useQueryClient()
   const module = slug ? LESSON_MODULES[slug] : null
 
-  const { data: lessons } = useQuery({ queryKey: ['lessons'], queryFn: api.lessons.list })
+  const { data: lessons, isLoading: lessonsLoading } = useQuery({ queryKey: ['lessons'], queryFn: api.lessons.list })
   const lesson = lessons?.find(l => l.slug === slug)
 
   const startMutation = useMutation({
@@ -64,11 +65,13 @@ export default function LessonDetail() {
             <ChevronLeft className="h-4 w-4" />
             Lessons
           </Link>
-          {lesson && (
+          {lessonsLoading ? (
+            <Skeleton className="h-5 w-20 rounded-full" />
+          ) : lesson ? (
             <Badge variant={lesson.status === 'completed' ? 'default' : 'secondary'}>
               {lesson.status === 'completed' ? 'Completed' : lesson.status === 'started' ? 'In Progress' : 'Not Started'}
             </Badge>
-          )}
+          ) : null}
         </div>
 
         <div className="prose prose-slate dark:prose-invert max-w-none">
