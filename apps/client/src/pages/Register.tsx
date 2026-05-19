@@ -36,6 +36,11 @@ export default function Register() {
     <div className="flex items-center justify-center min-h-screen bg-muted/40">
       <Card className="w-full max-w-sm">
         <CardHeader>
+          <div className="flex justify-center mb-4">
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500">
+              <span className="text-2xl font-extrabold text-white tracking-tight">Rx</span>
+            </div>
+          </div>
           <CardTitle>Create account</CardTitle>
           <CardDescription>Start your ophthalmic training today</CardDescription>
         </CardHeader>
