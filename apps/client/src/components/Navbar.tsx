@@ -19,8 +19,19 @@ export function Navbar() {
   return (
     <nav className="border-b bg-background">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/dashboard" className="font-bold text-lg tracking-tight">
-          TransposerX
+        <Link to="/dashboard" className="flex flex-col leading-none">
+          <span
+            className="font-bold text-[1.25rem]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            TransposerX
+          </span>
+          <span
+            className="text-[0.6rem] uppercase tracking-[0.1em] text-muted-foreground font-normal"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
+            Eye Clinic University
+          </span>
         </Link>
         <div className="flex items-center gap-1">
           <Link to="/dashboard" className={navLink}>
