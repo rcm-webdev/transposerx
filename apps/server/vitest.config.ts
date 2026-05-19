@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitest/config'
 import { config } from 'dotenv'
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
 
-config({ path: '.env.test' })
+config({ path: resolve(fileURLToPath(import.meta.url), '..', '.env.test') })
 
 export default defineConfig({
   test: {
