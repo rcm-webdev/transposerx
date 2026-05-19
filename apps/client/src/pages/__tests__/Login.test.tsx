@@ -51,7 +51,9 @@ describe('Login', () => {
 
   it('shows validation error for invalid email format', async () => {
     const { user } = setup()
-    // jsdom rejects invalid values on type="email" inputs; override the value setter to bypass this
+    // jsdom sanitizes type="email" inputs: element.value returns "" for invalid emails.
+    // Override the value property to bypass this, then fire a synthetic change event so
+    // react-hook-form reads the invalid value from event.target.value.
     const emailInput = screen.getByLabelText('Email') as HTMLInputElement
     Object.defineProperty(emailInput, 'value', { writable: true, value: 'not-an-email' })
     fireEvent.change(emailInput)
