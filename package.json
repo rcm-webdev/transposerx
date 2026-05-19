@@ -11,9 +11,11 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "test": "turbo test",
-    "migrate": "npm run migrate --workspace=apps/server"
+    "migrate": "npm run migrate --workspace=apps/server",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "shadcn": "^4.7.0",
     "turbo": "^2.0.0"
   }

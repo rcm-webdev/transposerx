@@ -13,6 +13,7 @@ dist-ssr
 packages/*/dist
 *.local
 .env*
+!.env*.example
 todo.todo
 
 .superpowers/
@@ -31,4 +32,3 @@ todo.todo
 
 .agents/
 .claude/
-docs/
