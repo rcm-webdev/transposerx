@@ -71,6 +71,18 @@ graph TD
 
 ---
 
+## Testing
+
+| Layer | Tool | Notes |
+|---|---|---|
+| Server integration | Vitest | Auth API tests run against a real test database; each suite truncates tables in `globalSetup` |
+| Client unit | Vitest + React Testing Library | jsdom environment; component tests for pages and shared UI |
+| E2E | Playwright (Chromium) | Isolated test database; global setup/teardown wipes state before each run |
+
+A dedicated test Postgres service is defined in `docker-compose` so the test DB never touches production data. Server tests guard against `DATABASE_URL` pointing at the wrong DB before any writes.
+
+---
+
 ## Design Decisions
 
 **Session cookies over JWTs**
