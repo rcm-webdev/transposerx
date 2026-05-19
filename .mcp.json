@@ -4,8 +4,7 @@
       "command": "npx",
       "args": [
         "shadcn@latest",
-        "mcp",
-        "@playwright/mcp@latest"
+        "mcp"
       ]
     }
   }
