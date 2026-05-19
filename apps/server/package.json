@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:test": "DOTENV_CONFIG_PATH=.env.test tsx src/index.ts",
     "build": "prisma generate && tsc",
     "start": "node dist/index.js",
     "migrate": "prisma migrate dev",
