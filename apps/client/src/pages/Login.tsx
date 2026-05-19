@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const schema = z.object({
   email: z.string().trim().min(1, 'Email is required').email({ message: 'Please enter a valid email address' }),
@@ -38,21 +39,35 @@ export default function Login() {
           <CardDescription>Enter your credentials to access TransposerX</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" {...register('email')} />
-              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+          {isSubmitting ? (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Skeleton className="h-10 w-full" />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register('password')} />
-              {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-            </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </form>
+          ) : (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" {...register('email')} />
+                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" {...register('password')} />
+                {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                Sign in
+              </Button>
+            </form>
+          )}
           <p className="text-sm text-center text-muted-foreground mt-4">
             No account?{' '}
             <Link to="/register" className="underline underline-offset-4">
