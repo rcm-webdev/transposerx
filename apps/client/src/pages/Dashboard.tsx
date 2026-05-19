@@ -7,6 +7,7 @@ import { TransposeForm } from "@/components/TransposeForm";
 import { HistoryList } from "@/components/HistoryList";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const statusLabel: Record<string, string> = {
   completed: "Done",
@@ -34,12 +35,16 @@ export default function Dashboard() {
                 <BookOpen className="h-3.5 w-3.5" />
                 LESSONS DONE
               </div>
-              <p className="text-2xl font-bold">
-                {data?.lessonsCompleted ?? "—"}{" "}
-                <span className="text-sm font-normal text-muted-foreground">
-                  / 4
-                </span>
-              </p>
+              {isLoading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : (
+                <p className="text-2xl font-bold">
+                  {data?.lessonsCompleted ?? "—"}{" "}
+                  <span className="text-sm font-normal text-muted-foreground">
+                    / 4
+                  </span>
+                </p>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -48,9 +53,13 @@ export default function Dashboard() {
                 <FlipHorizontal className="h-3.5 w-3.5" />
                 TRANSPOSITIONS
               </div>
-              <p className="text-2xl font-bold">
-                {data?.transpositionCount ?? "—"}
-              </p>
+              {isLoading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : (
+                <p className="text-2xl font-bold">
+                  {data?.transpositionCount ?? "—"}
+                </p>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -59,11 +68,15 @@ export default function Dashboard() {
                 <Trophy className="h-3.5 w-3.5" />
                 BEST QUIZ
               </div>
-              <p className="text-2xl font-bold">
-                {data?.bestQuiz
-                  ? `${data.bestQuiz.score} / ${data.bestQuiz.total}`
-                  : "—"}
-              </p>
+              {isLoading ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                <p className="text-2xl font-bold">
+                  {data?.bestQuiz
+                    ? `${data.bestQuiz.score} / ${data.bestQuiz.total}`
+                    : "—"}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -78,24 +91,38 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Progress value={((data?.lessonsCompleted ?? 0) / 4) * 100} />
-              <p className="text-xs text-muted-foreground">
-                {data?.lessonsCompleted ?? 0} of 4 lessons completed
-              </p>
-              <div className="space-y-1">
-                {data?.lessonProgress.map((l) => (
-                  <div key={l.slug} className="flex justify-between text-sm">
-                    <Link to={`/lessons/${l.slug}`} className="hover:underline">
-                      {l.title}
-                    </Link>
-                    <span
-                      className={`text-xs ${l.status === "completed" ? "text-green-600 font-medium" : "text-muted-foreground"}`}
-                    >
-                      {statusLabel[l.status]}
-                    </span>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-2 w-full" />
+                  <Skeleton className="h-3 w-32" />
+                  <div className="space-y-1">
+                    {[...Array(4)].map((_, i) => (
+                      <Skeleton key={i} className="h-4 w-full" />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              ) : (
+                <>
+                  <Progress value={((data?.lessonsCompleted ?? 0) / 4) * 100} />
+                  <p className="text-xs text-muted-foreground">
+                    {data?.lessonsCompleted ?? 0} of 4 lessons completed
+                  </p>
+                  <div className="space-y-1">
+                    {data?.lessonProgress.map((l) => (
+                      <div key={l.slug} className="flex justify-between text-sm">
+                        <Link to={`/lessons/${l.slug}`} className="hover:underline">
+                          {l.title}
+                        </Link>
+                        <span
+                          className={`text-xs ${l.status === "completed" ? "text-green-600 font-medium" : "text-muted-foreground"}`}
+                        >
+                          {statusLabel[l.status]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -110,10 +137,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="space-y-1">
                   {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-4 bg-muted animate-pulse rounded"
-                    />
+                    <Skeleton key={i} className="h-4 w-full" />
                   ))}
                 </div>
               ) : (
