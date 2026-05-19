@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { LessonCard } from "@/components/LessonCard";
 import { Progress } from "@/components/ui/progress";
 import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Lessons() {
   const { data: lessons, isLoading } = useQuery({
@@ -45,7 +46,7 @@ export default function Lessons() {
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
+              <Skeleton key={i} className="h-16 w-full rounded-lg" />
             ))}
           </div>
         ) : (
