@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: transposerx-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npx turbo build --filter=@transposerx/server && npx prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+    startCommand: node apps/server/dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: transposerx-db
+          property: connectionString
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: BETTER_AUTH_URL
+        value: https://transposerx-api.onrender.com
+      - key: CLIENT_ORIGIN
+        value: https://transposerx-app.onrender.com
+
+  - type: web
+    name: transposerx-app
+    runtime: static
+    plan: free
+    buildCommand: npm ci && npx turbo build --filter=@transposerx/client
+    staticPublishPath: apps/client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://transposerx-api.onrender.com
+
+databases:
+  - name: transposerx-db
+    plan: free
