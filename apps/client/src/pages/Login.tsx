@@ -1,9 +1,10 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { signIn } from '@/lib/auth'
+import { signIn, useSession } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,17 +19,20 @@ type FormValues = z.infer<typeof schema>
 
 export default function Login() {
   const navigate = useNavigate()
+  const { data: session } = useSession()
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   })
+
+  useEffect(() => {
+    if (session) navigate('/dashboard', { replace: true })
+  }, [session, navigate])
 
   const onSubmit = async (values: FormValues) => {
     const result = await signIn.email({ email: values.email, password: values.password })
     if (result.error) {
       toast.error(result.error.message || 'Invalid credentials')
-      return
     }
-    navigate('/dashboard')
   }
 
   return (

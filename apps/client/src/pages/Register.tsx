@@ -1,9 +1,10 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { signUp } from '@/lib/auth'
+import { signUp, useSession } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,17 +20,20 @@ type FormValues = z.infer<typeof schema>
 
 export default function Register() {
   const navigate = useNavigate()
+  const { data: session } = useSession()
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   })
+
+  useEffect(() => {
+    if (session) navigate('/dashboard', { replace: true })
+  }, [session, navigate])
 
   const onSubmit = async (values: FormValues) => {
     const result = await signUp.email({ name: values.name, email: values.email, password: values.password })
     if (result.error) {
       toast.error(result.error.message || 'Registration failed')
-      return
     }
-    navigate('/dashboard')
   }
 
   return (
