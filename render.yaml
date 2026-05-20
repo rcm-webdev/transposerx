@@ -3,7 +3,8 @@ services:
     name: transposerx-api
     runtime: node
     plan: free
-    buildCommand: npm ci && npx turbo build --filter=@transposerx/server && npx prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+    buildCommand: npm ci && npx turbo build --filter=@transposerx/server
+    preDeployCommand: npx prisma migrate deploy --schema=apps/server/prisma/schema.prisma
     startCommand: node apps/server/dist/index.js
     envVars:
       - key: NODE_ENV
