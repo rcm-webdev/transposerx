@@ -1,20 +1,26 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { BookOpen, LayoutDashboard, FlipHorizontal, Brain, LogOut } from 'lucide-react'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { signOut } from '@/lib/auth'
+import { Link, useNavigate } from "react-router-dom";
+import {
+  BookOpen,
+  LayoutDashboard,
+  FlipHorizontal,
+  Brain,
+  LogOut,
+} from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { signOut } from "@/lib/auth";
 
 export function Navbar() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
-      await signOut()
+      await signOut();
     } finally {
-      navigate('/login')
+      navigate("/login");
     }
-  }
+  };
 
-  const navLink = buttonVariants({ variant: 'ghost', size: 'sm' })
+  const navLink = buttonVariants({ variant: "ghost", size: "sm" });
 
   return (
     <nav className="border-b bg-background">
@@ -24,7 +30,7 @@ export function Navbar() {
             className="font-bold text-[1.25rem]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            TransposerX
+            Transpose<span className="text-primary">Rx</span>
           </span>
           <span
             className="text-[0.6rem] uppercase tracking-[0.1em] text-muted-foreground font-normal"
@@ -57,5 +63,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
