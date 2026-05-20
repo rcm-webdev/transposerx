@@ -91,8 +91,8 @@ Better Auth manages sessions in the database, eliminating manual token refresh l
 **MDX content bundled with the client**
 Lesson files live in `apps/client/content/` and are compiled by Vite at build time, keeping the server stateless for content. Adding a new lesson is a file addition rather than a database migration.
 
-**Unique constraint + upsert for transposition history**
-Rather than cleaning up old records in application code, a `@@unique([userId, eye])` constraint enforces one record per eye per user at the database level, keeping the history table lean and the logic simple.
+**Containerized deployment**
+The application is packaged as a multi-stage Docker image. The builder stage compiles both the React client and Express server; the runtime stage copies only the compiled artifacts and production dependencies, keeping the image lean. The tradeoff is added build complexity, but it ensures the deployed environment matches development exactly, eliminates "works on my machine" failures, and makes the app portable across any hosting platform without environment-specific configuration.
 
 **Shared packages for transpose logic and types**
 Core transposition logic lives in `@transposerx/utils` (with unit tests) and is consumed by both client and server, ensuring consistent behavior across the stack without duplication.

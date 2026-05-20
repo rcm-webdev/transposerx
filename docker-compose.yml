@@ -1,4 +1,17 @@
 services:
+  app:
+    image: transposerx:local
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://transposerx:transposerx@db:5432/transposerx
+      BETTER_AUTH_SECRET: local-dev-secret-replace-in-production
+      BETTER_AUTH_URL: http://localhost:3000
+      CLIENT_ORIGIN: http://localhost:3000
+      PORT: "3000"
+    depends_on:
+      - db
+
   db:
     image: postgres:16
     environment:
