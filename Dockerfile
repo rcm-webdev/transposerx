@@ -55,5 +55,12 @@ COPY --from=builder /app/apps/client/dist ./apps/client/dist
 COPY scripts/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    chown -R appuser:appgroup /app
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -qO- http://localhost:3000/health || exit 1
+
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]
