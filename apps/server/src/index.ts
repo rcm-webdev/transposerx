@@ -1,4 +1,6 @@
 import 'dotenv/config'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import express from 'express'
 import cors from 'cors'
 import { toNodeHandler } from 'better-auth/node'
@@ -29,6 +31,13 @@ app.use('/api/transpositions', requireAuth, transpositionsRouter)
 app.use('/api/lessons', requireAuth, lessonsRouter)
 app.use('/api/practice', requireAuth, practiceRouter)
 app.use('/api/dashboard', requireAuth, dashboardRouter)
+
+if (process.env.NODE_ENV === 'production') {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url))
+  const clientDist = path.join(__dirname, '../../client/dist')
+  app.use(express.static(clientDist))
+  app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
+}
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`))

@@ -1,0 +1,31 @@
+# Dependencies — installed fresh inside Docker
+**/node_modules
+
+# Git
+.git
+.gitignore
+
+# Sensitive env files — never bake into the image
+**/.env
+**/.env.*
+!**/.env.example
+apps/client/.env.local
+
+# Built artifacts — rebuilt inside Docker
+**/dist
+**/.turbo
+
+# Local dev tooling
+docker-compose.yml
+
+# Test/E2E infrastructure
+e2e/
+playwright.config.ts
+test-results/
+
+# Docs and local tooling
+docs/
+.superpowers/
+.agents/
+.claude/
+skills-lock.json

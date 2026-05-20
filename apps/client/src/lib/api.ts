@@ -3,7 +3,7 @@ import type { TranspositionRecord, LessonWithProgress, DashboardData } from '@tr
 export type { TranspositionRecord, LessonWithProgress, DashboardData }
 
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL || window.location.origin,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 })
