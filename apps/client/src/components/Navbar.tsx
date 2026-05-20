@@ -33,7 +33,7 @@ export function Navbar() {
             Transpose<span className="text-primary">Rx</span>
           </span>
           <span
-            className="text-[0.6rem] uppercase tracking-[0.1em] text-muted-foreground font-normal"
+            className="text-[0.6rem] uppercase tracking-widest text-muted-foreground font-normal"
             style={{ fontFamily: "'Outfit', sans-serif" }}
           >
             Eye Clinic University
