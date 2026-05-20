@@ -1,16 +1,16 @@
+import axios, { type AxiosRequestConfig } from 'axios'
 import type { TranspositionRecord, LessonWithProgress, DashboardData } from '@transposerx/types'
 export type { TranspositionRecord, LessonWithProgress, DashboardData }
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+})
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    credentials: 'include',
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-  })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
+async function request<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
+  const res = await client.request<T>({ url: path, ...options })
+  return res.data
 }
 
 export const api = {
@@ -19,12 +19,12 @@ export const api = {
     create: (body: { eye: string; inputSphere: number; inputCylinder: number; inputAxis: number }) =>
       request<{ id: string; outSphere: number; outCylinder: number; outAxis: number }>(
         '/api/transpositions',
-        { method: 'POST', body: JSON.stringify(body) }
+        { method: 'POST', data: body }
       ),
     createBoth: (body: {
       od: { inputSphere: number; inputCylinder: number; inputAxis: number }
       os: { inputSphere: number; inputCylinder: number; inputAxis: number }
-    }) => request<{ ok: boolean }>('/api/transpositions/both', { method: 'POST', body: JSON.stringify(body) }),
+    }) => request<{ ok: boolean }>('/api/transpositions/both', { method: 'POST', data: body }),
   },
   lessons: {
     list: () => request<LessonWithProgress[]>('/api/lessons'),
@@ -40,7 +40,7 @@ export const api = {
     submitAttempt: (body: { source: string; score: number; total: number }) =>
       request<{ id: string; score: number; total: number; createdAt: string }>(
         '/api/practice/attempt',
-        { method: 'POST', body: JSON.stringify(body) }
+        { method: 'POST', data: body }
       ),
     best: () =>
       request<{ score: number; total: number; createdAt: string } | null>('/api/practice/best'),
