@@ -11,6 +11,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.CLIENT_ORIGIN) {
 const trustedOrigins = [process.env.CLIENT_ORIGIN ?? 'http://localhost:5173']
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
