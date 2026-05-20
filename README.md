@@ -1,8 +1,8 @@
-# Transpose Rx
+# TransposeRx - Eye Clinic University
 
 Internal training tool built for ophthalmic technicians at a local eye clinic, combining an instant prescription transposer with a structured lesson library and practice mode.
 
-![Transpose Rx](apps/client/public/transposerx.jpg)
+![Transpose Rx](apps/client/public/secu.jpg)
 
 ---
 
