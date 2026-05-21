@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { createAuthMiddleware } from 'better-auth/api'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from './prisma.js'
 
@@ -19,4 +20,18 @@ export const auth = betterAuth({
   },
   trustedOrigins,
   secret,
+  rateLimit: {
+    enabled: true,
+    storage: 'database',
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === '/sign-up/email') {
+        return new Response(
+          JSON.stringify({ message: 'Registration is currently closed.' }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        )
+      }
+    }),
+  },
 })

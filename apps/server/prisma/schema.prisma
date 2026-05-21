@@ -105,3 +105,10 @@ enum ProgressStatus {
   started
   completed
 }
+
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
