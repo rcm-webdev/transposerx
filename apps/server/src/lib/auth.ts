@@ -9,6 +9,9 @@ if (!secret) throw new Error('BETTER_AUTH_SECRET env var is required')
 if (process.env.NODE_ENV === 'production' && !process.env.CLIENT_ORIGIN) {
   throw new Error('CLIENT_ORIGIN env var is required in production')
 }
+if (process.env.NODE_ENV === 'production' && !process.env.BETTER_AUTH_URL) {
+  throw new Error('BETTER_AUTH_URL env var is required in production')
+}
 const trustedOrigins = [process.env.CLIENT_ORIGIN ?? 'http://localhost:5173']
 
 export const auth = betterAuth({
