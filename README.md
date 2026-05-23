@@ -13,7 +13,25 @@ Internal training tool built for ophthalmic technicians at a local eye clinic, c
 - MDX-based lesson library covering cylinder, axis, and transposition concepts
 - Quiz and practice mode with personal best score tracking
 - Dashboard summarizing lesson progress and recent transposition history
-- Session-based authentication with email and password registration
+- Session-based authentication with email and password (registration is disabled in production; use the demo account below)
+
+---
+
+## Demo account
+
+Registration is closed. After migrations, seed a demo user so reviewers can sign in:
+
+```bash
+npm run migrate
+npm run seed
+```
+
+| Field | Value |
+|-------|--------|
+| Email | `demo@transposerx.app` |
+| Password | `DemoPass123!` |
+
+Docker Compose runs migrations and seed on container start. Override credentials with `DEMO_SEED_EMAIL` and `DEMO_SEED_PASSWORD` in the server environment if needed.
 
 ---
 

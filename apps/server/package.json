@@ -5,13 +5,18 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:test": "DOTENV_CONFIG_PATH=.env.test tsx src/index.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && tsc -p tsconfig.seed.json",
     "start": "node dist/index.js",
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
     "test": "vitest run"
   },
+  "prisma": {
+    "seed": "node dist/prisma/seed.js"
+  },
   "dependencies": {
+    "@better-auth/utils": "^0.4.0",
     "@prisma/client": "^6.0.0",
     "@transposerx/types": "*",
     "@transposerx/utils": "*",
