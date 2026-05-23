@@ -12,6 +12,7 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "migrate": "npm run migrate --workspace=apps/server",
+    "seed": "npm run db:seed --workspace=apps/server",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

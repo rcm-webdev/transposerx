@@ -45,7 +45,12 @@ export default function Login() {
             </div>
           </div>
           <CardTitle>Sign in</CardTitle>
-          <CardDescription>Enter your credentials to access TransposerX</CardDescription>
+          <CardDescription>
+            Enter your credentials to access TransposerX.
+            <span className="mt-2 block text-xs">
+              Demo: demo@transposerx.app / DemoPass123!
+            </span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isSubmitting ? (
