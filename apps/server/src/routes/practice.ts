@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
-import { prisma } from '../lib/prisma.js'
+import { quizService } from '../services/quiz.service.js'
+import { practiceService } from '../services/practice.service.js'
 
 const router = Router()
 
@@ -20,10 +21,8 @@ router.post('/attempt', async (req, res, next) => {
     return
   }
   try {
-    const record = await prisma.quizAttempt.create({
-      data: { userId: res.locals.session.user.id, ...parsed.data },
-    })
-    res.status(201).json({ id: record.id, score: record.score, total: record.total, createdAt: record.createdAt })
+    const result = await quizService.submitAttempt(res.locals.session.user.id, parsed.data)
+    res.status(201).json(result)
   } catch (err) {
     next(err)
   }
@@ -31,14 +30,76 @@ router.post('/attempt', async (req, res, next) => {
 
 router.get('/best', async (_req, res, next) => {
   try {
+    const result = await quizService.getBestAttempt(res.locals.session.user.id)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// --- New server-driven practice session endpoints ---
+
+router.post('/session', async (_req, res, next) => {
+  try {
     const userId = res.locals.session.user.id
-    const attempts = await prisma.quizAttempt.findMany({ where: { userId } })
-    if (attempts.length === 0) {
-      res.json(null)
+    const session = practiceService.generateSession(userId)
+    res.status(201).json(session)
+  } catch (err) {
+    next(err)
+  }
+})
+
+const CheckAnswerSchema = z.object({
+  sessionId: z.string().min(1),
+  questionId: z.string().min(1),
+  selectedIndex: z.number().int().min(0),
+})
+
+router.post('/check', async (req, res, next) => {
+  const parsed = CheckAnswerSchema.safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() })
+    return
+  }
+  try {
+    const userId = res.locals.session.user.id
+    const result = practiceService.checkAnswer(
+      parsed.data.sessionId, parsed.data.questionId, parsed.data.selectedIndex, userId,
+    )
+    if ('error' in result) {
+      res.status(404).json({ error: result.error })
       return
     }
-    const best = attempts.reduce((b, c) => c.score / c.total > b.score / b.total ? c : b)
-    res.json({ score: best.score, total: best.total, createdAt: best.createdAt })
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+const SubmitSessionSchema = z.object({
+  sessionId: z.string().min(1),
+  answers: z.array(z.object({
+    questionId: z.string().min(1),
+    selectedIndex: z.number().int().min(0),
+  })),
+})
+
+router.post('/submit', async (req, res, next) => {
+  const parsed = SubmitSessionSchema.safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() })
+    return
+  }
+  try {
+    const userId = res.locals.session.user.id
+    const result = await practiceService.submitSession(
+      parsed.data.sessionId, parsed.data.answers, userId,
+    )
+    if ('error' in result) {
+      res.status(404).json({ error: result.error })
+      return
+    }
+    res.status(201).json(result)
   } catch (err) {
     next(err)
   }

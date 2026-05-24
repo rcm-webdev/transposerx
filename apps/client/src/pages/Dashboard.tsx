@@ -41,7 +41,7 @@ export default function Dashboard() {
                 <p className="text-2xl font-bold">
                   {data?.lessonsCompleted ?? "—"}{" "}
                   <span className="text-sm font-normal text-muted-foreground">
-                    / 4
+                    / {data?.totalLessons ?? 4}
                   </span>
                 </p>
               )}
@@ -103,9 +103,9 @@ export default function Dashboard() {
                 </>
               ) : (
                 <>
-                  <Progress value={((data?.lessonsCompleted ?? 0) / 4) * 100} />
+                  <Progress value={((data?.lessonsCompleted ?? 0) / (data?.totalLessons ?? 4)) * 100} />
                   <p className="text-xs text-muted-foreground">
-                    {data?.lessonsCompleted ?? 0} of 4 lessons completed
+                    {data?.lessonsCompleted ?? 0} of {data?.totalLessons ?? 4} lessons completed
                   </p>
                   <div className="space-y-1">
                     {data?.lessonProgress.map((l) => (

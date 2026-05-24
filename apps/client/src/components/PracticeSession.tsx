@@ -1,113 +1,74 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { BookOpen, FlipHorizontal, CheckCircle2, XCircle } from 'lucide-react'
+import type { PracticeQuestion, PracticeSubmitResult } from '@transposerx/types'
 import { api } from '@/lib/api'
-import { transpose, formatRx } from '@transposerx/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-
-import { frontmatter as fm1 } from '../../content/lessons/01-what-is-cylinder.mdx'
-import { frontmatter as fm2 } from '../../content/lessons/02-what-is-axis.mdx'
-import { frontmatter as fm3 } from '../../content/lessons/03-why-transposition-matters.mdx'
-import { frontmatter as fm4 } from '../../content/lessons/04-when-to-use-each-format.mdx'
-
-type QuestionType = 'concept' | 'drill'
-
-interface Question {
-  type: QuestionType
-  question: string
-  options: string[]
-  answer: number
-}
-
-function randomInRange(min: number, max: number, step: number): number {
-  const steps = Math.round((max - min) / step)
-  return min + Math.round(Math.random() * steps) * step
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
-}
-
-function generateDrill(): Question {
-  const sphere = randomInRange(-10, 10, 0.25)
-  const cylinder = randomInRange(-4, -0.25, 0.25)
-  const axis = Math.floor(Math.random() * 180) + 1
-  const correct = transpose({ sphere, cylinder, axis })
-
-  const distractor1 = transpose({ sphere, cylinder, axis: axis <= 135 ? axis + 45 : axis - 45 })
-  const distractor2 = transpose({ sphere, cylinder: -cylinder, axis })
-
-  const options = [
-    formatRx(correct),
-    formatRx(distractor1),
-    formatRx(distractor2),
-  ]
-
-  const shuffledOptions = [...options].sort(() => Math.random() - 0.5)
-  const correctIndex = shuffledOptions.indexOf(options[0])
-
-  return {
-    type: 'drill',
-    question: `Transpose: ${round2(sphere) >= 0 ? '+' : ''}${round2(sphere).toFixed(2)} ${round2(cylinder).toFixed(2)} x ${String(axis).padStart(3, '0')}`,
-    options: shuffledOptions,
-    answer: correctIndex,
-  }
-}
-
-function buildSession(): Question[] {
-  const allConceptQs: Question[] = [fm1, fm2, fm3, fm4]
-    .flatMap(fm => (fm?.quiz ?? []).map(q => ({ type: 'concept' as const, ...q })))
-
-  const shuffledConcept = [...allConceptQs].sort(() => Math.random() - 0.5).slice(0, 6)
-  const drills = Array.from({ length: 4 }, generateDrill)
-
-  return [...shuffledConcept, ...drills].sort(() => Math.random() - 0.5)
-}
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function PracticeSession() {
-  const [questions] = useState<Question[]>(() => buildSession())
   const [current, setCurrent] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
-  const [done, setDone] = useState(false)
+  const [answers, setAnswers] = useState<{ questionId: string; selectedIndex: number }[]>([])
+  const [result, setResult] = useState<PracticeSubmitResult | null>(null)
+  const [lastCorrectIndex, setLastCorrectIndex] = useState<number | null>(null)
 
-  const submitMutation = useMutation({
-    mutationFn: (s: number) =>
-      api.practice.submitAttempt({ source: 'practice', score: s, total: questions.length }),
+  const { data: session, isLoading, error } = useQuery({
+    queryKey: ['practice-session'],
+    queryFn: api.practice.createSession,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   })
 
-  const handleSelect = (index: number) => {
-    if (selected !== null) return
-    setSelected(index)
-    const correct = index === questions[current].answer
-    const newScore = correct ? score + 1 : score
+  const checkMutation = useMutation({
+    mutationFn: api.practice.checkAnswer,
+  })
 
-    setTimeout(() => {
-      if (current + 1 >= questions.length) {
-        setScore(newScore)
-        setDone(true)
-        submitMutation.mutate(newScore)
-      } else {
-        if (correct) setScore(newScore)
-        setCurrent(c => c + 1)
-        setSelected(null)
-      }
-    }, 1000)
+  const submitMutation = useMutation({
+    mutationFn: api.practice.submitSession,
+    onSuccess: (data) => setResult(data),
+  })
+
+  if (isLoading) {
+    return (
+      <Card className="max-w-lg mx-auto">
+        <CardHeader><Skeleton className="h-6 w-48" /></CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    )
   }
 
-  if (done) {
+  if (error || !session) {
+    return (
+      <Card className="max-w-lg mx-auto">
+        <CardContent className="pt-6 text-center text-muted-foreground">
+          Failed to load practice session. Please try again.
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const questions: PracticeQuestion[] = session.questions
+
+  if (result) {
     return (
       <Card className="max-w-lg mx-auto">
         <CardHeader>
           <p className="text-xl font-bold">Session Complete</p>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
-          <p className="text-4xl font-bold">{score} / {questions.length}</p>
+          <p className="text-4xl font-bold">{result.score} / {result.total}</p>
           <p className="text-muted-foreground">
-            {score === questions.length ? 'Perfect score!' : score >= 7 ? 'Great work.' : 'Keep practicing.'}
+            {result.score === result.total ? 'Perfect score!' : result.score >= 7 ? 'Great work.' : 'Keep practicing.'}
           </p>
           <Button onClick={() => window.location.reload()} className="w-full">
             Start New Session
@@ -119,6 +80,37 @@ export function PracticeSession() {
 
   const q = questions[current]
   const isAnswered = selected !== null
+
+  const handleSelect = (index: number) => {
+    if (isAnswered || checkMutation.isPending) return
+    setSelected(index)
+
+    const newAnswers = [...answers, { questionId: q.id, selectedIndex: index }]
+    setAnswers(newAnswers)
+
+    checkMutation.mutate(
+      { sessionId: session.sessionId, questionId: q.id, selectedIndex: index },
+      {
+        onSuccess: (checkResult) => {
+          setLastCorrectIndex(checkResult.correctIndex)
+          const correct = checkResult.correct
+          const newScore = correct ? score + 1 : score
+
+          setTimeout(() => {
+            if (current + 1 >= questions.length) {
+              setScore(newScore)
+              submitMutation.mutate({ sessionId: session.sessionId, answers: newAnswers })
+            } else {
+              if (correct) setScore(newScore)
+              setCurrent(c => c + 1)
+              setSelected(null)
+              setLastCorrectIndex(null)
+            }
+          }, 1000)
+        },
+      },
+    )
+  }
 
   return (
     <Card className="max-w-lg mx-auto">
@@ -140,7 +132,7 @@ export function PracticeSession() {
         <p className="font-medium font-mono text-sm">{q.question}</p>
         <div className="space-y-2">
           {q.options.map((option, index) => {
-            const isCorrectOption = index === q.answer
+            const isCorrectOption = lastCorrectIndex !== null && index === lastCorrectIndex
             const isSelectedOption = index === selected
             return (
               <button

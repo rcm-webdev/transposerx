@@ -1,5 +1,12 @@
 import axios, { type AxiosRequestConfig } from 'axios'
-import type { TranspositionRecord, LessonWithProgress, DashboardData } from '@transposerx/types'
+import type {
+  TranspositionRecord,
+  LessonWithProgress,
+  DashboardData,
+  PracticeSession,
+  PracticeCheckResult,
+  PracticeSubmitResult,
+} from '@transposerx/types'
 export type { TranspositionRecord, LessonWithProgress, DashboardData }
 
 const client = axios.create({
@@ -44,6 +51,12 @@ export const api = {
       ),
     best: () =>
       request<{ score: number; total: number; createdAt: string } | null>('/api/practice/best'),
+    createSession: () =>
+      request<PracticeSession>('/api/practice/session', { method: 'POST' }),
+    checkAnswer: (body: { sessionId: string; questionId: string; selectedIndex: number }) =>
+      request<PracticeCheckResult>('/api/practice/check', { method: 'POST', data: body }),
+    submitSession: (body: { sessionId: string; answers: { questionId: string; selectedIndex: number }[] }) =>
+      request<PracticeSubmitResult>('/api/practice/submit', { method: 'POST', data: body }),
   },
   dashboard: {
     get: () => request<DashboardData>('/api/dashboard'),
