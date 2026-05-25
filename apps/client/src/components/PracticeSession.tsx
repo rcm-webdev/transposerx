@@ -79,10 +79,11 @@ export function PracticeSession() {
   }
 
   const q = questions[current]
-  const isAnswered = selected !== null
+  const hasSelected = selected !== null
+  const isAnswered = lastCorrectIndex !== null
 
   const handleSelect = (index: number) => {
-    if (isAnswered || checkMutation.isPending) return
+    if (hasSelected || checkMutation.isPending) return
     setSelected(index)
 
     const newAnswers = [...answers, { questionId: q.id, selectedIndex: index }]
@@ -132,17 +133,17 @@ export function PracticeSession() {
         <p className="font-medium font-mono text-sm">{q.question}</p>
         <div className="space-y-2">
           {q.options.map((option, index) => {
-            const isCorrectOption = lastCorrectIndex !== null && index === lastCorrectIndex
+            const isCorrectOption = isAnswered && index === lastCorrectIndex
             const isSelectedOption = index === selected
             return (
               <button
                 key={index}
                 onClick={() => handleSelect(index)}
-                disabled={isAnswered}
+                disabled={hasSelected}
                 className={`w-full text-left px-4 py-2 rounded-md border text-sm font-mono transition-colors
                   ${isAnswered && isCorrectOption ? 'border-green-500 bg-green-50 dark:bg-green-950' : ''}
                   ${isAnswered && isSelectedOption && !isCorrectOption ? 'border-destructive bg-destructive/10' : ''}
-                  ${!isAnswered ? 'border-border hover:bg-muted cursor-pointer' : 'cursor-default'}
+                  ${!hasSelected ? 'border-border hover:bg-muted cursor-pointer' : 'cursor-default'}
                 `}
               >
                 <span className="flex items-center gap-2">
