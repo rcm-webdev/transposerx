@@ -31,8 +31,33 @@ export interface LessonWithProgress {
 
 export interface DashboardData {
   lessonsCompleted: number
+  totalLessons: number
   lessonProgress: LessonWithProgress[]
   recentHistory: TranspositionRecord[]
   bestQuiz: { score: number; total: number } | null
   transpositionCount: number
+}
+
+export interface PracticeQuestion {
+  id: string
+  type: 'concept' | 'drill'
+  question: string
+  options: string[]
+}
+
+export interface PracticeSession {
+  sessionId: string
+  questions: PracticeQuestion[]
+}
+
+export interface PracticeCheckResult {
+  correct: boolean
+}
+
+export interface PracticeSubmitResult {
+  id: string
+  score: number
+  total: number
+  results: { questionId: string; correct: boolean; correctIndex: number }[]
+  createdAt: string
 }
