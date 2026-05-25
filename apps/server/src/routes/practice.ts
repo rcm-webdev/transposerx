@@ -67,7 +67,8 @@ router.post('/check', async (req, res, next) => {
       parsed.data.sessionId, parsed.data.questionId, parsed.data.selectedIndex, userId,
     )
     if ('error' in result) {
-      res.status(404).json({ error: result.error })
+      const status = result.error === 'Question already answered' ? 409 : 404
+      res.status(status).json({ error: result.error })
       return
     }
     res.json(result)
@@ -78,10 +79,6 @@ router.post('/check', async (req, res, next) => {
 
 const SubmitSessionSchema = z.object({
   sessionId: z.string().min(1),
-  answers: z.array(z.object({
-    questionId: z.string().min(1),
-    selectedIndex: z.number().int().min(0),
-  })),
 })
 
 router.post('/submit', async (req, res, next) => {
@@ -92,9 +89,7 @@ router.post('/submit', async (req, res, next) => {
   }
   try {
     const userId = res.locals.session.user.id
-    const result = await practiceService.submitSession(
-      parsed.data.sessionId, parsed.data.answers, userId,
-    )
+    const result = await practiceService.submitSession(parsed.data.sessionId, userId)
     if ('error' in result) {
       res.status(404).json({ error: result.error })
       return

@@ -13,9 +13,8 @@ export function PracticeSession() {
   const [current, setCurrent] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
-  const [answers, setAnswers] = useState<{ questionId: string; selectedIndex: number }[]>([])
   const [result, setResult] = useState<PracticeSubmitResult | null>(null)
-  const [lastCorrectIndex, setLastCorrectIndex] = useState<number | null>(null)
+  const [lastCheckCorrect, setLastCheckCorrect] = useState<boolean | null>(null)
 
   const createSessionMutation = useMutation({
     mutationFn: api.practice.createSession,
@@ -87,32 +86,29 @@ export function PracticeSession() {
 
   const q = questions[current]
   const hasSelected = selected !== null
-  const isAnswered = lastCorrectIndex !== null
+  const isAnswered = lastCheckCorrect !== null
 
   const handleSelect = (index: number) => {
     if (hasSelected || checkMutation.isPending) return
     setSelected(index)
 
-    const newAnswers = [...answers, { questionId: q.id, selectedIndex: index }]
-    setAnswers(newAnswers)
-
     checkMutation.mutate(
       { sessionId: session.sessionId, questionId: q.id, selectedIndex: index },
       {
         onSuccess: (checkResult) => {
-          setLastCorrectIndex(checkResult.correctIndex)
+          setLastCheckCorrect(checkResult.correct)
           const correct = checkResult.correct
           const newScore = correct ? score + 1 : score
 
           setTimeout(() => {
             if (current + 1 >= questions.length) {
               setScore(newScore)
-              submitMutation.mutate({ sessionId: session.sessionId, answers: newAnswers })
+              submitMutation.mutate({ sessionId: session.sessionId })
             } else {
               if (correct) setScore(newScore)
               setCurrent(c => c + 1)
               setSelected(null)
-              setLastCorrectIndex(null)
+              setLastCheckCorrect(null)
             }
           }, 1000)
         },
@@ -140,22 +136,23 @@ export function PracticeSession() {
         <p className="font-medium font-mono text-sm">{q.question}</p>
         <div className="space-y-2">
           {q.options.map((option, index) => {
-            const isCorrectOption = isAnswered && index === lastCorrectIndex
             const isSelectedOption = index === selected
+            const showCorrect = isAnswered && isSelectedOption && lastCheckCorrect === true
+            const showIncorrect = isAnswered && isSelectedOption && lastCheckCorrect === false
             return (
               <button
                 key={index}
                 onClick={() => handleSelect(index)}
                 disabled={hasSelected}
                 className={`w-full text-left px-4 py-2 rounded-md border text-sm font-mono transition-colors
-                  ${isAnswered && isCorrectOption ? 'border-green-500 bg-green-50 dark:bg-green-950' : ''}
-                  ${isAnswered && isSelectedOption && !isCorrectOption ? 'border-destructive bg-destructive/10' : ''}
+                  ${showCorrect ? 'border-green-500 bg-green-50 dark:bg-green-950' : ''}
+                  ${showIncorrect ? 'border-destructive bg-destructive/10' : ''}
                   ${!hasSelected ? 'border-border hover:bg-muted cursor-pointer' : 'cursor-default'}
                 `}
               >
                 <span className="flex items-center gap-2">
-                  {isAnswered && isCorrectOption && <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" />}
-                  {isAnswered && isSelectedOption && !isCorrectOption && <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />}
+                  {showCorrect && <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" />}
+                  {showIncorrect && <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />}
                   {option}
                 </span>
               </button>

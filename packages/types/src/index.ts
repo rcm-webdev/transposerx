@@ -52,7 +52,6 @@ export interface PracticeSession {
 
 export interface PracticeCheckResult {
   correct: boolean
-  correctIndex: number
 }
 
 export interface PracticeSubmitResult {

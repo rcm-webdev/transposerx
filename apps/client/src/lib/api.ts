@@ -64,7 +64,7 @@ export const api = {
     })(),
     checkAnswer: (body: { sessionId: string; questionId: string; selectedIndex: number }) =>
       request<PracticeCheckResult>('/api/practice/check', { method: 'POST', data: body }),
-    submitSession: (body: { sessionId: string; answers: { questionId: string; selectedIndex: number }[] }) =>
+    submitSession: (body: { sessionId: string }) =>
       request<PracticeSubmitResult>('/api/practice/submit', { method: 'POST', data: body }),
   },
   dashboard: {

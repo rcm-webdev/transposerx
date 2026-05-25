@@ -13,7 +13,15 @@ interface SessionQuestion extends Question {
   answer: number
 }
 
-const activeSessions = new Map<string, { questions: SessionQuestion[]; userId: string; createdAt: number }>()
+interface ActiveSession {
+  questions: SessionQuestion[]
+  userId: string
+  createdAt: number
+  /** First committed answer per question; score is derived from this only. */
+  answers: Map<string, number>
+}
+
+const activeSessions = new Map<string, ActiveSession>()
 
 const SESSION_TTL_MS = 30 * 60 * 1000 // 30 minutes
 
@@ -77,7 +85,7 @@ export const practiceService = {
     const questions = buildSession()
     const sessionId = crypto.randomUUID()
 
-    activeSessions.set(sessionId, { questions, userId, createdAt: Date.now() })
+    activeSessions.set(sessionId, { questions, userId, createdAt: Date.now(), answers: new Map() })
 
     const clientQuestions: Question[] = questions.map(q => ({
       id: q.id,
@@ -100,11 +108,16 @@ export const practiceService = {
       return { error: 'Question not found' as const }
     }
 
+    if (session.answers.has(questionId)) {
+      return { error: 'Question already answered' as const }
+    }
+
+    session.answers.set(questionId, selectedIndex)
     const correct = selectedIndex === question.answer
-    return { correct, correctIndex: question.answer }
+    return { correct }
   },
 
-  async submitSession(sessionId: string, answers: { questionId: string; selectedIndex: number }[], userId: string) {
+  async submitSession(sessionId: string, userId: string) {
     const session = activeSessions.get(sessionId)
     if (!session || session.userId !== userId) {
       return { error: 'Session not found or expired' as const }
@@ -112,8 +125,8 @@ export const practiceService = {
 
     let score = 0
     const results = session.questions.map(q => {
-      const answer = answers.find(a => a.questionId === q.id)
-      const correct = answer ? answer.selectedIndex === q.answer : false
+      const selectedIndex = session.answers.get(q.id)
+      const correct = selectedIndex !== undefined && selectedIndex === q.answer
       if (correct) score++
       return { questionId: q.id, correct, correctIndex: q.answer }
     })
