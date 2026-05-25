@@ -51,8 +51,17 @@ export const api = {
       ),
     best: () =>
       request<{ score: number; total: number; createdAt: string } | null>('/api/practice/best'),
-    createSession: () =>
-      request<PracticeSession>('/api/practice/session', { method: 'POST' }),
+    createSession: (() => {
+      let inflight: Promise<PracticeSession> | null = null
+      return () => {
+        inflight ??= request<PracticeSession>('/api/practice/session', { method: 'POST' }).finally(
+          () => {
+            inflight = null
+          },
+        )
+        return inflight
+      }
+    })(),
     checkAnswer: (body: { sessionId: string; questionId: string; selectedIndex: number }) =>
       request<PracticeCheckResult>('/api/practice/check', { method: 'POST', data: body }),
     submitSession: (body: { sessionId: string; answers: { questionId: string; selectedIndex: number }[] }) =>

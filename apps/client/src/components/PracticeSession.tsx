@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { BookOpen, FlipHorizontal, CheckCircle2, XCircle } from 'lucide-react'
 import type { PracticeQuestion, PracticeSubmitResult } from '@transposerx/types'
 import { api } from '@/lib/api'
@@ -17,12 +17,19 @@ export function PracticeSession() {
   const [result, setResult] = useState<PracticeSubmitResult | null>(null)
   const [lastCorrectIndex, setLastCorrectIndex] = useState<number | null>(null)
 
-  const { data: session, isLoading, error } = useQuery({
-    queryKey: ['practice-session'],
-    queryFn: api.practice.createSession,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
+  const createSessionMutation = useMutation({
+    mutationFn: api.practice.createSession,
+    retry: false,
   })
+  const { mutate: createSession } = createSessionMutation
+
+  useEffect(() => {
+    createSession()
+  }, [createSession])
+
+  const session = createSessionMutation.data
+  const isLoading = createSessionMutation.isPending && session === undefined
+  const error = createSessionMutation.error
 
   const checkMutation = useMutation({
     mutationFn: api.practice.checkAnswer,
