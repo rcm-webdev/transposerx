@@ -47,7 +47,7 @@ function EyeFields({
   return (
     <div className="space-y-3">
       <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{eye}</h3>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {(['sphere', 'cylinder', 'axis'] as const).map(field => (
           <div key={field} className="space-y-1">
             <Label className="text-xs capitalize">{field}</Label>

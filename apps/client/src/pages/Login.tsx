@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
+import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 import { signIn, useSession } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+
+const DEMO_EMAIL = 'demo@transposerx.app'
+const DEMO_PASSWORD = 'DemoPass123!'
+
+async function copyDemoCredential(value: string, label: 'username' | 'password') {
+  try {
+    await navigator.clipboard.writeText(value)
+    toast.success(label === 'username' ? 'Copied username' : 'Copied password')
+  } catch {
+    toast.error('Failed to copy')
+  }
+}
 
 const schema = z.object({
   email: z.string().trim().min(1, 'Email is required').email({ message: 'Please enter a valid email address' }),
@@ -47,8 +60,30 @@ export default function Login() {
           <CardTitle>Sign in</CardTitle>
           <CardDescription>
             Enter your credentials to access TransposerX.
-            <span className="mt-2 block text-xs">
-              Demo: demo@transposerx.app / DemoPass123!
+            <span className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Demo:</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                className="h-6 max-w-full rounded-full font-normal"
+                onClick={() => copyDemoCredential(DEMO_EMAIL, 'username')}
+                aria-label="Copy demo email"
+              >
+                <Copy className="size-3 shrink-0" />
+                <span className="truncate">{DEMO_EMAIL}</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                className="h-6 rounded-full font-normal"
+                onClick={() => copyDemoCredential(DEMO_PASSWORD, 'password')}
+                aria-label="Copy demo password"
+              >
+                <Copy className="size-3 shrink-0" />
+                <span className="truncate">{DEMO_PASSWORD}</span>
+              </Button>
             </span>
           </CardDescription>
         </CardHeader>
