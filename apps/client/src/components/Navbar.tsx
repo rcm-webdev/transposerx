@@ -117,10 +117,8 @@ export function Navbar() {
               ))}
               <Button
                 variant="ghost"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "sm" }),
-                  "mt-1 w-full justify-start gap-2 px-3 py-2.5 h-auto text-base"
-                )}
+                size="sm"
+                className="mt-1 w-full justify-start gap-2 px-3 py-2.5 h-auto text-base"
                 onClick={handleSignOut}
               >
                 <LogOut className="h-4 w-4" />
