@@ -24,11 +24,11 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8 space-y-6 sm:space-y-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
@@ -82,8 +82,8 @@ export default function Dashboard() {
         </div>
 
         {/* Two-column body */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <Card className="gap-3 sm:gap-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <BookOpen className="h-4 w-4" />
@@ -109,12 +109,18 @@ export default function Dashboard() {
                   </p>
                   <div className="space-y-1">
                     {data?.lessonProgress.map((l) => (
-                      <div key={l.slug} className="flex justify-between text-sm">
-                        <Link to={`/lessons/${l.slug}`} className="hover:underline">
+                      <div
+                        key={l.slug}
+                        className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:items-center text-sm min-w-0"
+                      >
+                        <Link
+                          to={`/lessons/${l.slug}`}
+                          className="hover:underline min-w-0 break-words"
+                        >
                           {l.title}
                         </Link>
                         <span
-                          className={`text-xs ${l.status === "completed" ? "text-green-600 font-medium" : "text-muted-foreground"}`}
+                          className={`text-xs shrink-0 ${l.status === "completed" ? "text-green-600 font-medium" : "text-muted-foreground"}`}
                         >
                           {statusLabel[l.status]}
                         </span>
@@ -126,14 +132,14 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="gap-3 sm:gap-4 min-w-0">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Table2 className="h-4 w-4" />
                 Recent Transpositions
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="min-w-0">
               {isLoading ? (
                 <div className="space-y-1">
                   {[...Array(5)].map((_, i) => (
@@ -152,7 +158,7 @@ export default function Dashboard() {
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Quick Transpose
           </h2>
-          <div className="max-w-xl">
+          <div className="w-full max-w-xl">
             <TransposeForm />
           </div>
         </div>
