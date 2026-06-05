@@ -54,6 +54,7 @@ export function usePracticeSession() {
     queryKey: ['practice-session'],
     queryFn: api.practice.createSession,
     staleTime: Infinity,
+    gcTime: 0,
     retry: false,
   })
 
