@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import { BookOpen, FlipHorizontal, CheckCircle2, XCircle } from 'lucide-react'
-import type { PracticeQuestion, PracticeSubmitResult } from '@transposerx/types'
-import { api } from '@/lib/api'
+import { usePracticeSession } from '@/hooks/usePracticeSession'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -10,34 +7,19 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function PracticeSession() {
-  const [current, setCurrent] = useState(0)
-  const [selected, setSelected] = useState<number | null>(null)
-  const [score, setScore] = useState(0)
-  const [result, setResult] = useState<PracticeSubmitResult | null>(null)
-  const [lastCheckCorrect, setLastCheckCorrect] = useState<boolean | null>(null)
-
-  const createSessionMutation = useMutation({
-    mutationFn: api.practice.createSession,
-    retry: false,
-  })
-  const { mutate: createSession } = createSessionMutation
-
-  useEffect(() => {
-    createSession()
-  }, [createSession])
-
-  const session = createSessionMutation.data
-  const isLoading = createSessionMutation.isPending && session === undefined
-  const error = createSessionMutation.error
-
-  const checkMutation = useMutation({
-    mutationFn: api.practice.checkAnswer,
-  })
-
-  const submitMutation = useMutation({
-    mutationFn: api.practice.submitSession,
-    onSuccess: (data) => setResult(data),
-  })
+  const {
+    current,
+    selected,
+    score,
+    result,
+    lastCheckCorrect,
+    question,
+    questions,
+    isLoading,
+    error,
+    selectAnswer,
+    restart,
+  } = usePracticeSession()
 
   if (isLoading) {
     return (
@@ -53,7 +35,7 @@ export function PracticeSession() {
     )
   }
 
-  if (error || !session) {
+  if (error) {
     return (
       <Card className="max-w-lg mx-auto">
         <CardContent className="pt-6 text-center text-muted-foreground">
@@ -62,8 +44,6 @@ export function PracticeSession() {
       </Card>
     )
   }
-
-  const questions: PracticeQuestion[] = session.questions
 
   if (result) {
     return (
@@ -76,7 +56,7 @@ export function PracticeSession() {
           <p className="text-muted-foreground">
             {result.score === result.total ? 'Perfect score!' : result.score >= 7 ? 'Great work.' : 'Keep practicing.'}
           </p>
-          <Button onClick={() => window.location.reload()} className="w-full">
+          <Button onClick={restart} className="w-full">
             Start New Session
           </Button>
         </CardContent>
@@ -84,37 +64,10 @@ export function PracticeSession() {
     )
   }
 
-  const q = questions[current]
+  if (!question) return null
+
   const hasSelected = selected !== null
   const isAnswered = lastCheckCorrect !== null
-
-  const handleSelect = (index: number) => {
-    if (hasSelected || checkMutation.isPending) return
-    setSelected(index)
-
-    checkMutation.mutate(
-      { sessionId: session.sessionId, questionId: q.id, selectedIndex: index },
-      {
-        onSuccess: (checkResult) => {
-          setLastCheckCorrect(checkResult.correct)
-          const correct = checkResult.correct
-          const newScore = correct ? score + 1 : score
-
-          setTimeout(() => {
-            if (current + 1 >= questions.length) {
-              setScore(newScore)
-              submitMutation.mutate({ sessionId: session.sessionId })
-            } else {
-              if (correct) setScore(newScore)
-              setCurrent(c => c + 1)
-              setSelected(null)
-              setLastCheckCorrect(null)
-            }
-          }, 1000)
-        },
-      },
-    )
-  }
 
   return (
     <Card className="max-w-lg mx-auto">
@@ -124,7 +77,7 @@ export function PracticeSession() {
             Question {current + 1} of {questions.length}
           </span>
           <Badge variant="outline" className="gap-1">
-            {q.type === 'concept'
+            {question.type === 'concept'
               ? <><BookOpen className="h-3 w-3" /> Concept</>
               : <><FlipHorizontal className="h-3 w-3" /> Transposition Drill</>
             }
@@ -133,16 +86,16 @@ export function PracticeSession() {
         <Progress value={((current) / questions.length) * 100} />
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="font-medium font-mono text-sm">{q.question}</p>
+        <p className="font-medium font-mono text-sm">{question.question}</p>
         <div className="space-y-2">
-          {q.options.map((option, index) => {
+          {question.options.map((option, index) => {
             const isSelectedOption = index === selected
             const showCorrect = isAnswered && isSelectedOption && lastCheckCorrect === true
             const showIncorrect = isAnswered && isSelectedOption && lastCheckCorrect === false
             return (
               <button
                 key={index}
-                onClick={() => handleSelect(index)}
+                onClick={() => selectAnswer(index)}
                 disabled={hasSelected}
                 className={`w-full text-left px-4 py-2 rounded-md border text-sm font-mono transition-colors
                   ${showCorrect ? 'border-green-500 bg-green-50 dark:bg-green-950' : ''}
